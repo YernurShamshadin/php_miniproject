@@ -1,0 +1,27 @@
+{% extends "base.twig" %}
+
+{% block body %}
+    <h1>Подать новое объявление</h1>
+
+    <form action="/adverts" method="post">
+        <div>
+            <label>
+                Заголовок *
+                <input type="text" name="advert[title]" value="">
+            </label>
+        </div>
+        <div>
+            <label>
+                Описание *
+                <input type="text" name="advert[description]" value="">
+            </label>
+        </div>
+        <div>
+            <label>
+                Цена *
+                <input type="number" name="advert[price]" value="">
+            </label>
+        </div>
+        <input type="submit" value="Create">
+    </form>
+{% endblock %}
