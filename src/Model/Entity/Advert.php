@@ -32,7 +32,7 @@ class Advert
 		return $this->description ?? '';
 	}
 	
-	public function getPrice(): ?int
+        public function getPrice(): ?int
 	{
 		return $this->price;
 	}

@@ -4,7 +4,7 @@ namespace Shamshadinye\MyPhpProject\Model\Repository;
 
 use Shamshadinye\MyPhpProject\Model\Entity\Advert;
 
-class AdvertRepository
+class   AdvertRepository
 {
 	private const DB_PATH = '../storage/adverts.json';
 	
@@ -18,6 +18,14 @@ class AdvertRepository
 		
 		return $result;	
 	}
+
+    public function getOne(int $id): Advert
+    {
+        $db			= $this->getDB();
+        $advertData = $db[$id];
+
+        return new Advert($advertData);;
+    }
 	
 	public function create(array $advertData): Advert {
 		$db			= $this->getDB();

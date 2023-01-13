@@ -47,4 +47,16 @@ class AdvertController
 
         return $response->withRedirect('/adverts');
     }
+
+    public function show(ServerRequest $request, Response $response)
+    {
+        $advertId = $request->getAttribute('id');
+
+        $repo = new AdvertRepository();
+        $advert = $repo->getOne($advertId);
+
+        $view = Twig::fromRequest($request);
+
+        return $view->render($response, 'adverts/ad.twig', ['advert' => $advert]);
+    }
 }
