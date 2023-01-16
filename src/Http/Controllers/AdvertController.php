@@ -53,7 +53,7 @@ class AdvertController
         $advertId = $request->getAttribute('id');
 
         $repo = new AdvertRepository();
-        $advert = $repo->getOne($advertId);
+        $advert = $repo->findById($advertId);
 
         $view = Twig::fromRequest($request);
 
@@ -65,7 +65,7 @@ class AdvertController
         $advertId = $request->getAttribute('id');
 
         $repo = new AdvertRepository();
-        $advert = $repo->getOne($advertId);
+        $advert = $repo->findById($advertId);
 
         $view = Twig::fromRequest($request);
 

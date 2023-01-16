@@ -3,58 +3,106 @@
 namespace Shamshadinye\MyPhpProject\Model\Repository;
 
 use Shamshadinye\MyPhpProject\Model\Entity\Advert;
+use PDO;
 
 class   AdvertRepository
 {
-	private const DB_PATH = '../storage/adverts.json';
-	
-	public function getAll(): array
+    public function getAll(): array
 	{
-		$result = [];
-		
-		foreach ($this->getDB() as $advertData) {
-			$result[] = new Advert($advertData);
-		}
-		
-		return $result;	
+        $stmt = $this->connect()->query(
+            'SELECT
+                id,
+                title,
+                description,
+                price
+            FROM adverts'
+        );
+
+        $result = $stmt -> fetchAll();
+
+        $advert = [];
+        foreach( $result as $row ) {
+            $advert[] = new Advert($row);
+        }
+
+        return $advert;
 	}
 
-    public function getOne(int $id): Advert
+    public function findById(int $id): Advert
     {
-        $db			= $this->getDB();
-        $advertData = $db[$id];
+        $stmt = $this->connect()->prepare(
+            'SELECT
+                id,
+                title,
+                description,
+                price
+            FROM adverts
+            WHERE id = :id
+            LIMIT 1'
+        );
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        return new Advert($advertData);
+        return new Advert($result);
     }
 	
 	public function create(array $advertData): Advert {
-		$db			= $this->getDB();
-		$increment 	= array_key_last($db) + 1;
-		$advertData['id'] = $increment;
-		$db[$increment]	= $advertData;
-		
-		$this->saveDB($db);
-		
-		return new Advert($advertData);
-	}
-    public function update(array $advertData, int $id): Advert {
-        $db			= $this->getDB();
-        $advertData['id'] = $id;
-        $db[$id] = $advertData;
+        $stmt = $this->connect()->prepare(
+            'INSERT INTO adverts (
+                title,
+                description,
+                price
+            ) VALUES (
+                :title,
+                :description,
+                :price
+            )'
+        );
+        $stmt->bindValue(':title', $advertData['title'], PDO::PARAM_STR);
+        $stmt->bindValue(':description', $advertData['description'], PDO::PARAM_STR);
+        $stmt->bindValue(':price', $advertData['price'], PDO::PARAM_INT);
+        $stmt->execute();
 
-        $this->saveDB($db);
+        $advertData['id']=$this->connect()->lastInsertId();
 
         return new Advert($advertData);
+	}
+    public function update(array $advertData, int $id): Advert {
+        $stmt = $this->connect()->prepare(
+            'UPDATE adverts SET
+                title = :title,
+                description = :description,
+                price = :price
+                WHERE id = :id'
+        );
+        $stmt->bindValue(':title', $advertData['title'], PDO::PARAM_STR);
+        $stmt->bindValue(':description', $advertData['description'], PDO::PARAM_STR);
+        $stmt->bindValue(':price', $advertData['price'], PDO::PARAM_STR);
+        $stmt->bindValue(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+
+        $advertData['id']=$id;
+        return new Advert($advertData);
     }
-	
-	private function getDB(): array
-	{
-        return json_decode(file_get_contents(self::DB_PATH), true) ?? [];
-	}
-	
-	private function saveDB(array $data):void
-	{
-        file_put_contents(self::DB_PATH, json_encode($data, JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT));
-	}
+    private function connect()
+    {
+        $pdo = null;
+        $host = 'localhost';
+        $db = 'db_for_php_miniproject';
+        $user = 'testuser';
+        $pass = 'testpassword';
+        $options = [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
+        ];
+
+        try {
+            $pdo = new PDO("mysql:host=$host;dbname=$db", $user, $pass, $options);
+        } catch (PDOException $e) {
+            echo 'DB connection error'.$e->getMessage();
+        }
+        return $pdo;
+    }
 }
 

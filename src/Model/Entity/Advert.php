@@ -21,19 +21,43 @@ class Advert
 	{
 		return $this->id;
 	}
-	
+    public function setId($id)
+    {
+        if ($this->id !== null) {
+            throw new Exception('id cannot be reset.');
+        }
+        $this->id = $id;
+
+        return $this;
+    }
 	public function getTitle(): string
 	{
 		return $this->title ?? '';
 	}
-	
+    public function setTitle($title)
+    {
+        $this->title = $title;
+
+        return $this;
+    }
 	public function getDescription(): string
 	{
 		return $this->description ?? '';
 	}
-	
-        public function getPrice(): ?int
+    public function setDescription($description)
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+    public function getPrice(): ?int
 	{
 		return $this->price;
 	}
+    public function setPrice($price)
+    {
+        $this->price = $price;
+
+        return $this;
+    }
 }
