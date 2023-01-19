@@ -21,18 +21,22 @@ class AdvertController
 	}
 	
 	public function newAdvert(ServerRequest $request, Response $response) {
+        $advertsRepo = new AdvertRepository();
+        $categories = $advertsRepo->getCategories();
         $view = Twig::fromRequest($request);
 
-        return $view->render($response, 'adverts/new.twig');
+        return $view->render($response, 'adverts/new.twig', ['categories'=>$categories]);
     }
 
     public function create(ServerRequest $request, Response $response)
     {
         $repo        = new AdvertRepository();
         $advertData  = $request->getParsedBodyParam('advert', []);
-        
+
+        $categories = $repo->getCategories();
+
         $validator = new AdvertValidator();
-        $errors    = $validator->validate($advertData);
+        $errors    = $validator->validate($advertData, $categories);
 
         if (!empty($errors)) {
             $view = Twig::fromRequest($request);
@@ -67,9 +71,11 @@ class AdvertController
         $repo = new AdvertRepository();
         $advert = $repo->findById($advertId);
 
+        $categories = $repo->getCategories();
+
         $view = Twig::fromRequest($request);
 
-        return $view->render($response, 'adverts/edit.twig', ['advert' => $advert]);
+        return $view->render($response, 'adverts/edit.twig', ['advert' => $advert, 'categories'=>$categories]);
     }
 
     public function update(ServerRequest $request, Response $response)
@@ -79,8 +85,10 @@ class AdvertController
         $repo        = new AdvertRepository();
         $advertData  = $request->getParsedBodyParam('advert', []);
 
+        $categories = $repo->getCategories();
+
         $validator = new AdvertValidator();
-        $errors    = $validator->validate($advertData);
+        $errors    = $validator->validate($advertData, $categories);
 
         if (!empty($errors)) {
             $view = Twig::fromRequest($request);

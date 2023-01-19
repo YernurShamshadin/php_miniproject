@@ -8,6 +8,7 @@ class Advert
 	private ?string $title;
 	private ?string $description;
 	private ?int	$price;
+    private ?string $category;
 	
 	public function __construct($data = [])
 	{
@@ -15,6 +16,7 @@ class Advert
 		$this->title = $data['title'] ?? null;
 		$this->description = $data['description'] ?? null;
 		$this->price = $data['price'] ?? null;
+        $this->category = $data['category'] ?? null;
 	}
 	
 	public function getId(): ?int
@@ -57,6 +59,16 @@ class Advert
     public function setPrice($price)
     {
         $this->price = $price;
+
+        return $this;
+    }
+    public function getCategory(): string
+    {
+        return $this->category;
+    }
+    public function setCategory($category)
+    {
+        $this->category = $category;
 
         return $this;
     }

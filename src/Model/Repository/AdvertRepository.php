@@ -11,15 +11,19 @@ class   AdvertRepository
 	{
         $stmt = $this->connect()->query(
             'SELECT
-                id,
-                title,
-                description,
-                price
-            FROM adverts'
+                ad.id,
+                ad.title,
+                ad.description,
+                ad.price,
+                ct.name as category
+            FROM adverts ad
+            JOIN categories ct
+            ON ad.categoryID=ct.id
+            ORDER BY ad.id'
         );
 
         $result = $stmt -> fetchAll();
-
+        
         $advert = [];
         foreach( $result as $row ) {
             $advert[] = new Advert($row);
@@ -52,16 +56,19 @@ class   AdvertRepository
             'INSERT INTO adverts (
                 title,
                 description,
-                price
+                price,
+                categoryID 
             ) VALUES (
                 :title,
                 :description,
                 :price
+                :categoryID
             )'
         );
         $stmt->bindValue(':title', $advertData['title'], PDO::PARAM_STR);
         $stmt->bindValue(':description', $advertData['description'], PDO::PARAM_STR);
         $stmt->bindValue(':price', $advertData['price'], PDO::PARAM_INT);
+        $stmt->bindValue(':categoryID', $advertData['category'], PDO::PARAM_INT);
         $stmt->execute();
 
         $advertData['id']=$this->connect()->lastInsertId();
@@ -73,17 +80,31 @@ class   AdvertRepository
             'UPDATE adverts SET
                 title = :title,
                 description = :description,
-                price = :price
+                price = :price,
+                categoryID = :categoryID
                 WHERE id = :id'
         );
         $stmt->bindValue(':title', $advertData['title'], PDO::PARAM_STR);
         $stmt->bindValue(':description', $advertData['description'], PDO::PARAM_STR);
-        $stmt->bindValue(':price', $advertData['price'], PDO::PARAM_STR);
+        $stmt->bindValue(':price', $advertData['price'], PDO::PARAM_INT);
+        $stmt->bindValue(':categoryID', $advertData['category'], PDO::PARAM_INT);
         $stmt->bindValue(':id', $id, PDO::PARAM_INT);
         $stmt->execute();
 
         $advertData['id']=$id;
         return new Advert($advertData);
+    }
+
+    public function getCategories(): array
+    {
+        $stmt = $this->connect()->query(
+            'SELECT
+                ct.id,
+                ct.name 
+            FROM categories ct'
+        );
+
+        return $stmt -> fetchAll();
     }
     private function connect()
     {

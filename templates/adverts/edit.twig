@@ -49,6 +49,20 @@
             </label>
         </div>
         <br>
+        <div>
+            <label>
+                Категория *
+                <select name="advert[category]">
+                    {% for category in categories %}
+                        <option value="{{ category.id }}">{{ category.name }}</option>
+                    {% endfor %}
+                </select>
+                {% if errors.category %}
+                    <div style="color: red">{{ errors.category }}</div>
+                {% endif %}
+            </label>
+        </div>
+        <br>
         <input type="submit" value="Update">
     </form>
 {% endblock %}
